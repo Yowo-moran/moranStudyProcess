@@ -10,7 +10,10 @@
     <script>
         //初始搭建
         let p = new Promise((resolve,reject)=>{
-            resolve("ok");
+            // resolve("ok");
+            // reject("error");
+            // 抛出异常
+            throw "error";
         });
 
         p.then(value =>{
