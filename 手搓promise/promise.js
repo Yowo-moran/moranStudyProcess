@@ -5,7 +5,7 @@ function Promise(executor){
     this.PromiseResult = null;
 
     //声明属性
-    this.callback = {};
+    this.callbacks = [];
     
     //保存实例对象的 this 的值
     const self = this;
@@ -22,9 +22,9 @@ function Promise(executor){
         self.PromiseResult = data;
 
         //调用成功的回调函数
-        if(self.callback.onResolved){
-            self.callback.onResolved(data);
-        }
+        self.callbacks.forEach(item=>{
+            item.onResolved(data);
+        })
     }
 
     //reject 函数
@@ -39,9 +39,9 @@ function Promise(executor){
         self.PromiseResult = data;
 
         //调用失败的回调函数
-        if(self.callback.onRejected){
-            self.callback.onRejected(data);
-        }
+        self.callbacks.forEach(item=>{
+            item.onRejected(data);
+        })
     }
     
     try{
@@ -69,11 +69,11 @@ Promise.prototype.then = function(onResolved,onRejected){
 
     }else{
         //判断 penging 状态
-        
+
         //保存回调函数
-        this.callback = {
+        this.callbacks.push({
             onResolved:onResolved,
             onRejected:onRejected,
-        }
+        });
     }
 }
