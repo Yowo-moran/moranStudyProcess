@@ -5,22 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>手搓Promise</title>
+    <script src="./promise.js"></script>
 </head>
 <body>
     <script>
         //初始搭建
         let p = new Promise((resolve,reject)=>{
-            // resolve("ok");
-            // reject("error");
+            resolve("ok");
+            reject("error");
             // 抛出异常
-            throw "error";
+            // throw "error";
         });
+        
+        console.log(p);
 
-        p.then(value =>{
-            console.log(value);
-        },reason=>{
-            console.warn(reason);
-        })
+        // p.then(value =>{
+        //     console.log(value);
+        // },reason=>{
+        //     console.warn(reason);
+        // })
     </script>
 </body>
 </html>
