@@ -38,6 +38,12 @@ function Promise(executor){
 }
 
 //添加 then 方法
-Promise.prototype.then = function(onResolved,onReject){
-
+Promise.prototype.then = function(onResolved,onRejected){
+    //调用回调函数（以PromiseState判断）
+    if(this.PromiseState==='fulfilled'){
+        onResolved(this.PromiseResult);
+    }
+    if(this.PromiseState==='rejected'){
+        onRejected(this.PromiseResult);
+    }
 }

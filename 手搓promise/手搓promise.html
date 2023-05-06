@@ -11,19 +11,19 @@
     <script>
         //初始搭建
         let p = new Promise((resolve,reject)=>{
-            resolve("ok");
+            // resolve("ok");
             reject("error");
             // 抛出异常
             // throw "error";
         });
         
-        console.log(p);
+        // console.log(p);
 
-        // p.then(value =>{
-        //     console.log(value);
-        // },reason=>{
-        //     console.warn(reason);
-        // })
+        p.then(value =>{
+            console.log(value);
+        },reason=>{
+            console.warn(reason);
+        })
     </script>
 </body>
 </html>
