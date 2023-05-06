@@ -4,6 +4,9 @@ function Promise(executor){
     this.PromiseState = "penging";
     this.PromiseResult = null;
 
+    //声明属性
+    this.callback = {};
+    
     //保存实例对象的 this 的值
     const self = this;
 
@@ -11,28 +14,44 @@ function Promise(executor){
     function resolve(data){
         //判断状态
         if(self.PromiseState !== "penging") return;
+
         //1.修改对象的状态(promiseState)
         self.PromiseState = "fulfilled";//resolved
+
         //2.设置对象结果值(promiseResult)
         self.PromiseResult = data;
+
+        //调用成功的回调函数
+        if(self.callback.onResolved){
+            self.callback.onResolved(data);
+        }
     }
 
     //reject 函数
     function reject(data){
         //判断状态
         if(self.PromiseState !== "penging") return;
+
         //1.修改对象的状态(promiseState)
         self.PromiseState = "rejected";
+
         //2.设置对象结果值(promiseResult)
         self.PromiseResult = data;
+
+        //调用失败的回调函数
+        if(self.callback.onRejected){
+            self.callback.onRejected(data);
+        }
     }
     
     try{
         //同步调用“执行器函数”
         executor(resolve,reject);
+
     }catch(e){
         //修改promise对象状态为“失败”
         reject(e);
+
     }
 
 }
@@ -41,9 +60,20 @@ function Promise(executor){
 Promise.prototype.then = function(onResolved,onRejected){
     //调用回调函数（以PromiseState判断）
     if(this.PromiseState==='fulfilled'){
+        //判断 fulfilled 状态
         onResolved(this.PromiseResult);
-    }
-    if(this.PromiseState==='rejected'){
+
+    }else if(this.PromiseState==='rejected'){
+        //判断 rejected 状态
         onRejected(this.PromiseResult);
+
+    }else{
+        //判断 penging 状态
+        
+        //保存回调函数
+        this.callback = {
+            onResolved:onResolved,
+            onRejected:onRejected,
+        }
     }
 }
