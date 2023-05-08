@@ -1,5 +1,5 @@
 //声明构造函数
-function Promise(executor){
+function MyPromise(executor){
     //添加属性
     this.PromiseState = "penging";
     this.PromiseResult = null;
@@ -57,37 +57,73 @@ function Promise(executor){
 }
 
 //添加 then 方法
-Promise.prototype.then = function(onResolved,onRejected){
-    //调用回调函数（以PromiseState判断）
-    if(this.PromiseState==='fulfilled'){
-        try{
-            //获取回调函数的执行结果
-            let result = onResolved(this.PromiseResult);
+MyPromise.prototype.then = function(onResolved,onRejected){
+    const self = this;
+    return new MyPromise((resolve,reject)=>{
+        //调用回调函数（以PromiseState判断）
+        if(this.PromiseState==='fulfilled'){
+            try{
+                //获取回调函数的执行结果
+                let result = onResolved(this.PromiseResult);
 
-            //判读结果的类型
-            if(result instanceof Promise){
-                //如果是promise对象，就可以直接调用then方法
-                result.then(fulfilled=>{
-                    resolve(fulfilled);
-                },rejected=>{
-                    reject(rejected);
-                })
-            }else{
-                //如果不是promise对象，直接调用resole来改变状态
-                resolve(this.PromiseResult);
+                //判读结果的类型
+                if(result instanceof MyPromise){
+                    //如果是promise对象，就可以直接调用then方法
+                    result.then(fulfilled=>{
+                        resolve(fulfilled);
+                    },rejected=>{
+                        reject(rejected);
+                    })
+                }else{
+                    //如果不是promise对象，直接调用resole来改变状态
+                    resolve(this.PromiseResult);
+                }
+            }catch(e){
+                //抛出错误时的处理
+                reject(e);
             }
-        }catch(e){
-            //抛出错误时的处理
-            reject(e);
+        }else if(this.PromiseState==='rejected'){
+            onRejected(this.PromiseResult);
+        }else{
+            //保存回调函数
+            this.callbacks.push({
+                onResolved:function(){
+                    try{
+                        //执行成功回调函数
+                        let result = onResolved(self.PromiseResult);
+                        //判断
+                        if(result instanceof MyPromise){
+                            result.then(fulfilled=>{
+                                resolve(fulfilled);
+                            },rejected=>{
+                                reject(rejected);
+                            })
+                        }else{
+                            resolve(result);
+                        }
+                    }catch(e){
+                        reject(e);
+                    }
+                },
+                onRejected:function(){
+                    try{
+                        //执行失败回调函数
+                        let result = onRejected(self.PromiseResult);
+                        //判断
+                        if(result instanceof MyPromise){
+                            result.then(fulfilled=>{
+                                resolve(fulfilled);
+                            },rejected=>{
+                                reject(rejected);
+                            })
+                        }else{
+                            resolve(result);
+                        }
+                    }catch(e){
+                        reject(e);
+                    }
+                },
+            });
         }
-    }else if(this.PromiseState==='rejected'){
-        onRejected(this.PromiseResult);
-
-    }else{
-        //保存回调函数
-        this.callbacks.push({
-            onResolved:onResolved,
-            onRejected:onRejected,
-        });
-    }
+    })
 }
