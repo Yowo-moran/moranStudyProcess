@@ -60,16 +60,30 @@ function Promise(executor){
 Promise.prototype.then = function(onResolved,onRejected){
     //调用回调函数（以PromiseState判断）
     if(this.PromiseState==='fulfilled'){
-        //判断 fulfilled 状态
-        onResolved(this.PromiseResult);
+        try{
+            //获取回调函数的执行结果
+            let result = onResolved(this.PromiseResult);
 
+            //判读结果的类型
+            if(result instanceof Promise){
+                //如果是promise对象，就可以直接调用then方法
+                result.then(fulfilled=>{
+                    resolve(fulfilled);
+                },rejected=>{
+                    reject(rejected);
+                })
+            }else{
+                //如果不是promise对象，直接调用resole来改变状态
+                resolve(this.PromiseResult);
+            }
+        }catch(e){
+            //抛出错误时的处理
+            reject(e);
+        }
     }else if(this.PromiseState==='rejected'){
-        //判断 rejected 状态
         onRejected(this.PromiseResult);
 
     }else{
-        //判断 penging 状态
-
         //保存回调函数
         this.callbacks.push({
             onResolved:onResolved,

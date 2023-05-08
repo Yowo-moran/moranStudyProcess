@@ -19,7 +19,7 @@
             }, 1000);
         });
 
-        p.then(value =>{
+        const result = p.then(value =>{
             console.log(value);
         },reason=>{
             console.warn(reason);
@@ -31,7 +31,7 @@
             alert(reason);
         })
 
-        console.log(p);
+        console.log(result);
     </script>
 </body>
 </html>
