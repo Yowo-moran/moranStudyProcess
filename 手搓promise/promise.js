@@ -106,3 +106,27 @@ MyPromise.prototype.then = function(onResolved,onRejected){
 MyPromise.prototype.catch = function(onRejected){
     return this.then(undefined,onRejected);
 }
+
+//添加 resolve 方法
+MyPromise.prototype.resolve = function(result){
+    return new MyPromise((resolve,reject)=>{
+        if(result instanceof MyPromise){
+            //如果是promise对象，就可以直接调用then方法
+            result.then(fulfilled=>{
+                resolve(fulfilled);
+            },rejected=>{
+                reject(rejected);
+            })
+        }else{
+            //如果不是promise对象，直接调用resole来改变状态
+            resolve(result);
+        }
+    })
+}
+
+//添加 reject 方法
+MyPromise.prototype.reject = function(reason){
+    return new MyPromise((resolve,reject)=>{
+        reject(reason);
+    })
+}
