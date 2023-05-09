@@ -60,11 +60,11 @@ function MyPromise(executor){
 MyPromise.prototype.then = function(onResolved,onRejected){
     const self = this;
     return new MyPromise((resolve,reject)=>{
-        //调用回调函数（以PromiseState判断）
-        if(this.PromiseState==='fulfilled'){
+        //封装回调函数
+        function callback(type){
             try{
                 //获取回调函数的执行结果
-                let result = onResolved(this.PromiseResult);
+                let result = type(self.PromiseResult);
 
                 //判读结果的类型
                 if(result instanceof MyPromise){
@@ -82,48 +82,27 @@ MyPromise.prototype.then = function(onResolved,onRejected){
                 //抛出错误时的处理
                 reject(e);
             }
+        }
+        //调用回调函数（以PromiseState判断）
+        if(this.PromiseState==='fulfilled'){
+            callback(onResolved);
         }else if(this.PromiseState==='rejected'){
-            onRejected(this.PromiseResult);
+            callback(onRejected)
         }else{
             //保存回调函数
             this.callbacks.push({
                 onResolved:function(){
-                    try{
-                        //执行成功回调函数
-                        let result = onResolved(self.PromiseResult);
-                        //判断
-                        if(result instanceof MyPromise){
-                            result.then(fulfilled=>{
-                                resolve(fulfilled);
-                            },rejected=>{
-                                reject(rejected);
-                            })
-                        }else{
-                            resolve(result);
-                        }
-                    }catch(e){
-                        reject(e);
-                    }
+                    callback(onResolved);
                 },
                 onRejected:function(){
-                    try{
-                        //执行失败回调函数
-                        let result = onRejected(self.PromiseResult);
-                        //判断
-                        if(result instanceof MyPromise){
-                            result.then(fulfilled=>{
-                                resolve(fulfilled);
-                            },rejected=>{
-                                reject(rejected);
-                            })
-                        }else{
-                            resolve(result);
-                        }
-                    }catch(e){
-                        reject(e);
-                    }
+                    callback(onRejected);
                 },
             });
         }
     })
+}
+
+//添加 catch 方法
+MyPromise.prototype.catch = function(onRejected){
+    return this.then(undefined,onRejected);
 }
