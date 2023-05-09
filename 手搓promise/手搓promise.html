@@ -28,6 +28,11 @@
             // throw "error"
         })
 
+       
+        const ca = p.catch(reason=>{
+            console.warn(reason);
+        })
+
         // p.then(value =>{
         //     alert(value);
         // },reason=>{
@@ -35,7 +40,7 @@
         // })
 
         console.log(result);
-        console.log(p);
+        console.log(ca);
     </script>
 </body>
 </html>

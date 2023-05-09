@@ -101,3 +101,8 @@ MyPromise.prototype.then = function(onResolved,onRejected){
         }
     })
 }
+
+//添加 catch 方法
+MyPromise.prototype.catch = function(onRejected){
+    return this.then(undefined,onRejected);
+}
